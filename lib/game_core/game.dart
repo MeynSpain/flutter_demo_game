@@ -1,10 +1,10 @@
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_demo_game/entities/player.dart';
 import 'package:flutter_demo_game/game_core/main_loop.dart';
-import 'package:flutter_demo_game/utilits/common_vars.dart';
+import 'package:flutter_demo_game/utilits/global_vars.dart';
 
+///Будет менять сцены
 class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
 
@@ -14,8 +14,6 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
 
-
-  late Player player;
 
   //Порт для приема данных из главное изолята
   late ReceivePort _receivePort ;
@@ -28,37 +26,39 @@ class _GameState extends State<Game> {
 
 
 
-  void startIsolateLoop() async {
+  void _startIsolateLoop() async {
     //Инициализируем порт и изолят
     _receivePort = ReceivePort();
     _isolateLoop = await Isolate.spawn(mainLoop, _receivePort.sendPort);
 
     //Подключаем к порту слушатель, чтобы слушать пришло ли сообщение из главного изолята
     _receivePort.listen((message) {
+      //Делаем update сцены, вся математика сцены расчиталась
+      //и объекты начали двигаться
+      GlobalVars.currentScene.update();
+
       setState(() {
 
       });
     });
+  }
+
+  @override
+  void initState() {
+    _startIsolateLoop();
+    super.initState();
 
   }
 
   @override
+  void dispose() {
+    _receivePort.close();
+    _isolateLoop.kill();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    //Чтобы при каждой отрисовки виджета не создавались новые изоляты
-    if (isFirstStartGame){
-      startIsolateLoop();
-      isFirstStartGame = false;
-      player = Player();
-    }
-
-    player.update();
-
-    //Stack никак не позиционирует виджеты и располагает их в координатах (0,0)
-    return Stack(
-      children: [
-        player.build()
-      ],
-    );
+    return GlobalVars.currentScene.buildScene();
   }
 }
