@@ -1,16 +1,27 @@
 # flutter_demo_game
 
-A new Flutter project.
+## Немного про изоляты и порты
 
-## Getting Started
+Порт для приема данных из главного изолята(потока)  
+```dart
+ReceivePort _receivePort ;
+```
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+Изолят(поток), но в отличии от других языков
+для каждого изолята выделяется отдельная куча в памяти. И
+Изолят A не имеет доступа к памяти изолята В, также как и В к А.
+для этого и существуют порты(`ReceivePort`), чтобы передавать нужные данные между изолятами.
+```dart
+Isolate _isolateLoop;
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Немного про ассеты  
+Чтобы все ассеты заработали, то нужно указать в файле `pubspec.yaml` папку в которой эти ассеты хранятся  
+````yaml
+# The following section is specific to Flutter packages.
+flutter:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  assets:
+    - assets/
+````

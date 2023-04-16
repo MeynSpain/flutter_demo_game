@@ -1,8 +1,11 @@
 //Нижнее подчеркивание это модификатор private
+import 'dart:isolate';
+
 bool _running = true;
 
 ///Запуск тика и обновления картинки в игре
-void startLoop() {
+void mainLoop(SendPort sendPort) async {
+
   final double _fps = 50;
   final double _second = 1000;
   final double _updateTime = _second / _fps; //Каждые updateTime милисекунд нужно обновлять игру
@@ -16,12 +19,15 @@ void startLoop() {
   _timerWatch.start();
 
   while (_running) {
+
     //Каждый updateTime обновляем картинку
     if (_loopWatch.elapsedMilliseconds > _updateTime) {
       _updates++;
       _loopWatch.reset();
+      sendPort.send(true);
     }
 
+    //Считаем fps
     if (_timerWatch.elapsedMilliseconds > _second){
       print('${DateTime.now()} FPS: $_updates');
       _updates = 0;
