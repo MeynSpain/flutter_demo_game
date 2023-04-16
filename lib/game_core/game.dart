@@ -14,21 +14,19 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
 
-
   //Порт для приема данных из главное изолята
-  late ReceivePort _receivePort ;
+  final ReceivePort _receivePort  = ReceivePort();
 
   //Изолят(поток), но в отличии от других языков
   //Для каждого изолята выделяется отдельная куча в памяти и
   //Изолят A не имеет доступа к памяти изолят В, также как и В к А.
   //для этого и существуют порты(ReceivePort), чтобы передавать нужные данные между изолятами
-  late Isolate _isolateLoop;
+  late final Isolate _isolateLoop;
 
 
 
   void _startIsolateLoop() async {
-    //Инициализируем порт и изолят
-    _receivePort = ReceivePort();
+    //Инициализируем изолят
     _isolateLoop = await Isolate.spawn(mainLoop, _receivePort.sendPort);
 
     //Подключаем к порту слушатель, чтобы слушать пришло ли сообщение из главного изолята

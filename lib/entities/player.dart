@@ -15,20 +15,25 @@ class Player extends Entity {
   double _degree = 0;
   double _speed = 3;
 
+  bool isAcceleration = false;
   bool isMoveLeft = false;
   bool isMoveRight = false;
+
+  get getAngle => _angle;
 
   @override
   Widget build() {
     return Positioned(
         top: y,
         left: x,
-        child: visible ? Transform.rotate(angle: _angle, child: sprites.first,) : SizedBox()
+        child: visible ? Transform.rotate(angle: _angle, child: sprites[currentSprite],) : SizedBox()
     );
   }
 
   @override
   void move() {
+    if (!isAcceleration) return;
+
     if (isMoveLeft) _degree -= 5;
     if (isMoveRight) _degree += 5;
 
@@ -55,8 +60,4 @@ class Player extends Entity {
     isMoveLeft = false;
   }
 
-  @override
-  void update() {
-   move();
-  }
 }
